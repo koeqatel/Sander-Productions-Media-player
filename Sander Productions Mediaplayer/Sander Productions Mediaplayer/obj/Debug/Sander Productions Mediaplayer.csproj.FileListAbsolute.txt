@@ -13,3 +13,18 @@ C:\Users\Sander\documents\visual studio 2015\Projects\Sander Productions Mediapl
 C:\Users\Sander\Documents\Visual Studio 2015\Projects\Sander Productions Mediaplayer\Sander Productions Mediaplayer\bin\Debug\policy.2.0.taglib-sharp.dll
 C:\Users\Sander\Documents\Visual Studio 2015\Projects\Sander Productions Mediaplayer\Sander Productions Mediaplayer\bin\Debug\taglib-sharp.dll
 C:\Users\Sander\Documents\Visual Studio 2015\Projects\Sander Productions Mediaplayer\Sander Productions Mediaplayer\bin\Debug\policy.2.0.taglib-sharp.config
+C:\Users\Sander\Documents\Visual Studio 2015\Projects\Sander-Productions-Media-player\Sander Productions Mediaplayer\Sander Productions Mediaplayer\bin\Debug\Sander Productions Mediaplayer.exe.config
+C:\Users\Sander\Documents\Visual Studio 2015\Projects\Sander-Productions-Media-player\Sander Productions Mediaplayer\Sander Productions Mediaplayer\obj\Debug\Sander Productions Mediaplayer.exe
+C:\Users\Sander\Documents\Visual Studio 2015\Projects\Sander-Productions-Media-player\Sander Productions Mediaplayer\Sander Productions Mediaplayer\obj\Debug\Sander Productions Mediaplayer.pdb
+C:\Users\Sander\Documents\Visual Studio 2015\Projects\Sander-Productions-Media-player\Sander Productions Mediaplayer\Sander Productions Mediaplayer\bin\Debug\Sander Productions Mediaplayer.exe
+C:\Users\Sander\Documents\Visual Studio 2015\Projects\Sander-Productions-Media-player\Sander Productions Mediaplayer\Sander Productions Mediaplayer\bin\Debug\Sander Productions Mediaplayer.pdb
+C:\Users\Sander\Documents\Visual Studio 2015\Projects\Sander-Productions-Media-player\Sander Productions Mediaplayer\Sander Productions Mediaplayer\bin\Debug\NAudio.dll
+C:\Users\Sander\Documents\Visual Studio 2015\Projects\Sander-Productions-Media-player\Sander Productions Mediaplayer\Sander Productions Mediaplayer\bin\Debug\NAudio.WindowsMediaFormat.dll
+C:\Users\Sander\Documents\Visual Studio 2015\Projects\Sander-Productions-Media-player\Sander Productions Mediaplayer\Sander Productions Mediaplayer\bin\Debug\policy.2.0.taglib-sharp.dll
+C:\Users\Sander\Documents\Visual Studio 2015\Projects\Sander-Productions-Media-player\Sander Productions Mediaplayer\Sander Productions Mediaplayer\bin\Debug\taglib-sharp.dll
+C:\Users\Sander\Documents\Visual Studio 2015\Projects\Sander-Productions-Media-player\Sander Productions Mediaplayer\Sander Productions Mediaplayer\bin\Debug\NAudio.xml
+C:\Users\Sander\Documents\Visual Studio 2015\Projects\Sander-Productions-Media-player\Sander Productions Mediaplayer\Sander Productions Mediaplayer\bin\Debug\policy.2.0.taglib-sharp.config
+C:\Users\Sander\Documents\Visual Studio 2015\Projects\Sander-Productions-Media-player\Sander Productions Mediaplayer\Sander Productions Mediaplayer\obj\Debug\Sander Productions Mediaplayer.csprojResolveAssemblyReference.cache
+C:\Users\Sander\Documents\Visual Studio 2015\Projects\Sander-Productions-Media-player\Sander Productions Mediaplayer\Sander Productions Mediaplayer\obj\Debug\Sander_Productions_Mediaplayer.Player.resources
+C:\Users\Sander\Documents\Visual Studio 2015\Projects\Sander-Productions-Media-player\Sander Productions Mediaplayer\Sander Productions Mediaplayer\obj\Debug\Sander_Productions_Mediaplayer.Properties.Resources.resources
+C:\Users\Sander\Documents\Visual Studio 2015\Projects\Sander-Productions-Media-player\Sander Productions Mediaplayer\Sander Productions Mediaplayer\obj\Debug\Sander Productions Mediaplayer.csproj.GenerateResource.Cache

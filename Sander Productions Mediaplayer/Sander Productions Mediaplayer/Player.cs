@@ -82,9 +82,18 @@ namespace Sander_Productions_Mediaplayer
                         StatusLabel.Text = MediaPlayer.PlaybackState.ToString();
                         WhatMedia.Text = Title;
                         TagLib.File tagFile = TagLib.File.Create(TrackList.Items[0].Text);
-                        MemoryStream ms = new MemoryStream(tagFile.Tag.Pictures[0].Data.Data);
-                        System.Drawing.Image image = System.Drawing.Image.FromStream(ms);
-                        AlbumPicBox.BackgroundImage = image;
+                        try
+                        {
+                            MemoryStream ms = new MemoryStream(tagFile.Tag.Pictures[0].Data.Data);
+                            System.Drawing.Image image = System.Drawing.Image.FromStream(ms);
+                            AlbumPicBox.BackgroundImage = image;
+                        }
+                        catch(IndexOutOfRangeException)
+                        {
+                            AlbumPicBox.BackgroundImageLayout = ImageLayout.Stretch;
+                            AlbumPicBox.BackgroundImageLayout = ImageLayout.None;
+                            AlbumPicBox.BackgroundImage = AlbumPicBox.ErrorImage;
+                        }
                     }
                     Playing = true;
                 }
@@ -109,7 +118,9 @@ namespace Sander_Productions_Mediaplayer
         private void StopButton_Click(object sender, EventArgs e)
         {
             Playing = false;
+            Pause = false;
             MediaPlayer.Stop();
+            MediaPlayer.Dispose();
             LengthTimer.Stop();
             CurrentTimer.Stop();
             MilliSeconds = 0;
@@ -121,7 +132,6 @@ namespace Sander_Productions_Mediaplayer
             TimeLabel.Text = "0:00:00/0:00:00";
             TimeBar.Value = 0;
             StatusLabel.Text = "Stopped";
-
         }
         #endregion
 
@@ -266,7 +276,6 @@ namespace Sander_Productions_Mediaplayer
 
         private void FileButton_Click(object sender, EventArgs e)
         {
-            int i = 0;
             Dialog.Multiselect = true;
             if (Dialog.ShowDialog() == DialogResult.OK)
             {
@@ -278,23 +287,16 @@ namespace Sander_Productions_Mediaplayer
                 }
                 foreach (string file in files)
                 {
-                    //if (i == 0)
-                    //{
-                    //    i = 1;
-                    //}
-                    //else if (i == 1)
-                    //{
-                    //    i = 0;
-                    //}
+                    FileInfo fileInfo = new FileInfo(file);
+
+                    if (SuppExt.Contains(fileInfo.Extension))
+                    {
                     TagLib.File tagFile = TagLib.File.Create(file);
                     ListViewItem item = new ListViewItem();
                     item.Text = file;
                     AudioFileReader reader = new AudioFileReader(file);
                     TimeSpan totalTime = reader.TotalTime;
-                    FileInfo fileInfo = new FileInfo(file);
-
-                    if (SuppExt.Contains(fileInfo.Extension))
-                    {
+                    
                         if (!duplicates.Contains(file))
                         {
                             duplicates.Add(file);
@@ -386,6 +388,7 @@ namespace Sander_Productions_Mediaplayer
             var item = TrackList.Items[0];
             TrackList.Items.RemoveAt(0);
             TrackList.Items.Insert(TrackList.Items.Count, item);
+            Playing = true;
             Pause = false;
             LengthTimer.Start();
             CurrentTimer.Start();
@@ -396,9 +399,18 @@ namespace Sander_Productions_Mediaplayer
             StatusLabel.Text = MediaPlayer.PlaybackState.ToString();
             WhatMedia.Text = Title;
             TagLib.File tagFile = TagLib.File.Create(TrackList.Items[0].Text);
-            MemoryStream ms = new MemoryStream(tagFile.Tag.Pictures[0].Data.Data);
-            System.Drawing.Image image = System.Drawing.Image.FromStream(ms);
-            AlbumPicBox.BackgroundImage = image;
+            try
+            {
+                MemoryStream ms = new MemoryStream(tagFile.Tag.Pictures[0].Data.Data);
+                System.Drawing.Image image = System.Drawing.Image.FromStream(ms);
+                AlbumPicBox.BackgroundImage = image;
+            }
+            catch (IndexOutOfRangeException)
+            {
+                AlbumPicBox.BackgroundImageLayout = ImageLayout.Stretch;
+                AlbumPicBox.BackgroundImageLayout = ImageLayout.None;
+                AlbumPicBox.BackgroundImage = AlbumPicBox.ErrorImage;
+            }
         }
 
         private void PreviousButton_Click(object sender, EventArgs e)
@@ -434,6 +446,7 @@ namespace Sander_Productions_Mediaplayer
                     List.RemoveAt(0);
                 }
             }
+            Playing = true;
             Pause = false;
             LengthTimer.Start();
             CurrentTimer.Start();
@@ -444,9 +457,18 @@ namespace Sander_Productions_Mediaplayer
             StatusLabel.Text = MediaPlayer.PlaybackState.ToString();
             WhatMedia.Text = Title;
             TagLib.File tagFile = TagLib.File.Create(TrackList.Items[0].Text);
-            MemoryStream ms = new MemoryStream(tagFile.Tag.Pictures[0].Data.Data);
-            System.Drawing.Image image = System.Drawing.Image.FromStream(ms);
-            AlbumPicBox.BackgroundImage = image;
+            try
+            {
+                MemoryStream ms = new MemoryStream(tagFile.Tag.Pictures[0].Data.Data);
+                System.Drawing.Image image = System.Drawing.Image.FromStream(ms);
+                AlbumPicBox.BackgroundImage = image;
+            }
+            catch (IndexOutOfRangeException)
+            {
+                AlbumPicBox.BackgroundImageLayout = ImageLayout.Stretch;
+                AlbumPicBox.BackgroundImageLayout = ImageLayout.None;
+                AlbumPicBox.BackgroundImage = AlbumPicBox.ErrorImage;
+            }
         }
 
         private void AutoPlayBox_CheckedChanged(object sender, EventArgs e)
@@ -543,6 +565,25 @@ namespace Sander_Productions_Mediaplayer
             ViewArtist.Width = TrackList.Width / 100 * 27;
             ViewAlbum.Width = TrackList.Width / 100 * 27;
             ViewLength.Width = TrackList.Width / 100 * 16;
+        }
+
+        private void ClearButton_Click(object sender, EventArgs e)
+        {
+            Playing = false;
+            LengthTimer.Stop();
+            MediaPlayer.Stop();
+            CurrentTimer.Stop();
+            duplicates.Clear();
+            TrackList.Items.Clear();
+            MilliSeconds = 0;
+            Seconds = 1;
+            Minutes = 0;
+            Hours = 0;
+            CurrentSeconds = 0;
+            Time = 0;
+            TimeLabel.Text = "0:00:00/0:00:00";
+            TimeBar.Value = 0;
+            StatusLabel.Text = "Stopped";
         }
     }
 }

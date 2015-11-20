@@ -56,6 +56,7 @@
             this.StyleBox = new System.Windows.Forms.ComboBox();
             this.AlbumPicBox = new System.Windows.Forms.PictureBox();
             this.TimeLabel = new System.Windows.Forms.Label();
+            this.ClearButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.TimeBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Volume)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.AlbumPicBox)).BeginInit();
@@ -185,26 +186,31 @@
             // 
             // RealName
             // 
+            this.RealName.DisplayIndex = 4;
             this.RealName.Text = "FilePath";
             this.RealName.Width = 0;
             // 
             // ViewName
             // 
+            this.ViewName.DisplayIndex = 0;
             this.ViewName.Text = "Name";
             this.ViewName.Width = 175;
             // 
             // ViewArtist
             // 
+            this.ViewArtist.DisplayIndex = 1;
             this.ViewArtist.Text = "Artist";
             this.ViewArtist.Width = 100;
             // 
             // ViewAlbum
             // 
+            this.ViewAlbum.DisplayIndex = 2;
             this.ViewAlbum.Text = "Album";
             this.ViewAlbum.Width = 100;
             // 
             // ViewLength
             // 
+            this.ViewLength.DisplayIndex = 3;
             this.ViewLength.Text = "Length";
             this.ViewLength.Width = 72;
             // 
@@ -256,6 +262,7 @@
             // 
             // AutoPlayTimer
             // 
+            this.AutoPlayTimer.Enabled = true;
             this.AutoPlayTimer.Interval = 1000;
             this.AutoPlayTimer.Tick += new System.EventHandler(this.AutoPlayTimer_Tick);
             // 
@@ -296,6 +303,7 @@
             this.AlbumPicBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.AlbumPicBox.BackColor = System.Drawing.SystemColors.ControlLight;
             this.AlbumPicBox.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.AlbumPicBox.ErrorImage = ((System.Drawing.Image)(resources.GetObject("AlbumPicBox.ErrorImage")));
             this.AlbumPicBox.Location = new System.Drawing.Point(331, 12);
             this.AlbumPicBox.Name = "AlbumPicBox";
             this.AlbumPicBox.Size = new System.Drawing.Size(150, 135);
@@ -311,11 +319,22 @@
             this.TimeLabel.TabIndex = 36;
             this.TimeLabel.Text = "0:00:00/0:00:00";
             // 
+            // ClearButton
+            // 
+            this.ClearButton.Location = new System.Drawing.Point(234, 39);
+            this.ClearButton.Name = "ClearButton";
+            this.ClearButton.Size = new System.Drawing.Size(59, 23);
+            this.ClearButton.TabIndex = 47;
+            this.ClearButton.Text = "Clear List";
+            this.ClearButton.UseVisualStyleBackColor = true;
+            this.ClearButton.Click += new System.EventHandler(this.ClearButton_Click);
+            // 
             // Player
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(493, 340);
+            this.Controls.Add(this.ClearButton);
             this.Controls.Add(this.StyleBox);
             this.Controls.Add(this.TimeLabel);
             this.Controls.Add(this.BugsButton);
@@ -375,6 +394,7 @@
         private System.Windows.Forms.ComboBox StyleBox;
         private System.Windows.Forms.PictureBox AlbumPicBox;
         private System.Windows.Forms.Label TimeLabel;
+        private System.Windows.Forms.Button ClearButton;
     }
 }
 
