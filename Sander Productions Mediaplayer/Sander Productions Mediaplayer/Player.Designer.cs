@@ -37,7 +37,6 @@
             this.StopButton = new System.Windows.Forms.Button();
             this.PauseButton = new System.Windows.Forms.Button();
             this.PlayButton = new System.Windows.Forms.Button();
-            this.Volume = new System.Windows.Forms.TrackBar();
             this.PreviousButton = new System.Windows.Forms.Button();
             this.NextButton = new System.Windows.Forms.Button();
             this.TrackList = new System.Windows.Forms.ListView();
@@ -46,26 +45,26 @@
             this.ViewArtist = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.ViewAlbum = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.ViewLength = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.VolumeLabel = new System.Windows.Forms.Label();
             this.ShuffleButton = new System.Windows.Forms.Button();
             this.AutoPlayBox = new System.Windows.Forms.CheckBox();
-            this.BugsButton = new System.Windows.Forms.Button();
             this.AutoPlayTimer = new System.Windows.Forms.Timer(this.components);
             this.WhatMedia = new System.Windows.Forms.TextBox();
             this.CurrentTimer = new System.Windows.Forms.Timer(this.components);
-            this.StyleBox = new System.Windows.Forms.ComboBox();
             this.AlbumPicBox = new System.Windows.Forms.PictureBox();
             this.TimeLabel = new System.Windows.Forms.Label();
             this.ClearButton = new System.Windows.Forms.Button();
+            this.FolderButton = new System.Windows.Forms.Button();
+            this.FolderPicker = new System.Windows.Forms.FolderBrowserDialog();
+            this.PlayListButton = new System.Windows.Forms.Button();
+            this.PlayListBox = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.TimeBar)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.Volume)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.AlbumPicBox)).BeginInit();
             this.SuspendLayout();
             // 
             // StatusLabel
             // 
             this.StatusLabel.AutoSize = true;
-            this.StatusLabel.Location = new System.Drawing.Point(93, 17);
+            this.StatusLabel.Location = new System.Drawing.Point(179, 17);
             this.StatusLabel.Name = "StatusLabel";
             this.StatusLabel.Size = new System.Drawing.Size(95, 13);
             this.StatusLabel.TabIndex = 23;
@@ -93,6 +92,7 @@
             // 
             this.TimeBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.TimeBar.Enabled = false;
             this.TimeBar.Location = new System.Drawing.Point(12, 125);
             this.TimeBar.Maximum = 10000;
             this.TimeBar.Name = "TimeBar";
@@ -130,20 +130,6 @@
             this.PlayButton.UseVisualStyleBackColor = true;
             this.PlayButton.Click += new System.EventHandler(this.Playbutton_Click);
             // 
-            // Volume
-            // 
-            this.Volume.BackColor = System.Drawing.SystemColors.Control;
-            this.Volume.Cursor = System.Windows.Forms.Cursors.Default;
-            this.Volume.Location = new System.Drawing.Point(486, 194);
-            this.Volume.Maximum = 100;
-            this.Volume.Name = "Volume";
-            this.Volume.Orientation = System.Windows.Forms.Orientation.Vertical;
-            this.Volume.Size = new System.Drawing.Size(45, 134);
-            this.Volume.TabIndex = 24;
-            this.Volume.TickStyle = System.Windows.Forms.TickStyle.None;
-            this.Volume.Value = 100;
-            this.Volume.Scroll += new System.EventHandler(this.Volume_Scroll);
-            // 
             // PreviousButton
             // 
             this.PreviousButton.Location = new System.Drawing.Point(12, 97);
@@ -156,7 +142,7 @@
             // 
             // NextButton
             // 
-            this.NextButton.Location = new System.Drawing.Point(157, 96);
+            this.NextButton.Location = new System.Drawing.Point(160, 96);
             this.NextButton.Name = "NextButton";
             this.NextButton.Size = new System.Drawing.Size(60, 23);
             this.NextButton.TabIndex = 31;
@@ -182,6 +168,8 @@
             this.TrackList.TabIndex = 34;
             this.TrackList.UseCompatibleStateImageBehavior = false;
             this.TrackList.View = System.Windows.Forms.View.Details;
+            this.TrackList.DragDrop += new System.Windows.Forms.DragEventHandler(this.TrackList_DragDrop);
+            this.TrackList.DragEnter += new System.Windows.Forms.DragEventHandler(this.TrackList_DragEnter);
             this.TrackList.MouseClick += new System.Windows.Forms.MouseEventHandler(this.TrackList_MouseClick);
             // 
             // RealName
@@ -214,20 +202,11 @@
             this.ViewLength.Text = "Length";
             this.ViewLength.Width = 72;
             // 
-            // VolumeLabel
-            // 
-            this.VolumeLabel.AutoSize = true;
-            this.VolumeLabel.Location = new System.Drawing.Point(483, 178);
-            this.VolumeLabel.Name = "VolumeLabel";
-            this.VolumeLabel.Size = new System.Drawing.Size(25, 13);
-            this.VolumeLabel.TabIndex = 35;
-            this.VolumeLabel.Text = "100";
-            // 
             // ShuffleButton
             // 
-            this.ShuffleButton.Location = new System.Drawing.Point(235, 68);
+            this.ShuffleButton.Location = new System.Drawing.Point(204, 68);
             this.ShuffleButton.Name = "ShuffleButton";
-            this.ShuffleButton.Size = new System.Drawing.Size(57, 23);
+            this.ShuffleButton.Size = new System.Drawing.Size(59, 23);
             this.ShuffleButton.TabIndex = 39;
             this.ShuffleButton.Text = "Shuffle";
             this.ShuffleButton.UseVisualStyleBackColor = true;
@@ -239,26 +218,12 @@
             this.AutoPlayBox.AutoSize = true;
             this.AutoPlayBox.Checked = true;
             this.AutoPlayBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.AutoPlayBox.Location = new System.Drawing.Point(234, 97);
+            this.AutoPlayBox.Location = new System.Drawing.Point(269, 68);
             this.AutoPlayBox.Name = "AutoPlayBox";
             this.AutoPlayBox.Size = new System.Drawing.Size(59, 23);
             this.AutoPlayBox.TabIndex = 40;
             this.AutoPlayBox.Text = "AutoPlay";
             this.AutoPlayBox.UseVisualStyleBackColor = true;
-            this.AutoPlayBox.CheckedChanged += new System.EventHandler(this.AutoPlayBox_CheckedChanged);
-            // 
-            // BugsButton
-            // 
-            this.BugsButton.BackColor = System.Drawing.SystemColors.Control;
-            this.BugsButton.FlatAppearance.BorderColor = System.Drawing.Color.Red;
-            this.BugsButton.FlatAppearance.BorderSize = 3;
-            this.BugsButton.Location = new System.Drawing.Point(406, 12);
-            this.BugsButton.Name = "BugsButton";
-            this.BugsButton.Size = new System.Drawing.Size(75, 23);
-            this.BugsButton.TabIndex = 42;
-            this.BugsButton.Text = "Know Bugs";
-            this.BugsButton.UseVisualStyleBackColor = false;
-            this.BugsButton.Click += new System.EventHandler(this.BugsButton_Click);
             // 
             // AutoPlayTimer
             // 
@@ -285,28 +250,15 @@
             this.CurrentTimer.Interval = 1000;
             this.CurrentTimer.Tick += new System.EventHandler(this.CurrentTimer_Tick);
             // 
-            // StyleBox
-            // 
-            this.StyleBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.StyleBox.FormattingEnabled = true;
-            this.StyleBox.Items.AddRange(new object[] {
-            "Normal",
-            "Dark"});
-            this.StyleBox.Location = new System.Drawing.Point(360, 41);
-            this.StyleBox.Name = "StyleBox";
-            this.StyleBox.Size = new System.Drawing.Size(121, 21);
-            this.StyleBox.TabIndex = 45;
-            this.StyleBox.SelectedIndexChanged += new System.EventHandler(this.StyleBox_SelectedIndexChanged);
-            // 
             // AlbumPicBox
             // 
             this.AlbumPicBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.AlbumPicBox.BackColor = System.Drawing.SystemColors.ControlLight;
             this.AlbumPicBox.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.AlbumPicBox.ErrorImage = ((System.Drawing.Image)(resources.GetObject("AlbumPicBox.ErrorImage")));
-            this.AlbumPicBox.Location = new System.Drawing.Point(331, 12);
+            this.AlbumPicBox.Location = new System.Drawing.Point(336, 12);
             this.AlbumPicBox.Name = "AlbumPicBox";
-            this.AlbumPicBox.Size = new System.Drawing.Size(150, 135);
+            this.AlbumPicBox.Size = new System.Drawing.Size(145, 135);
             this.AlbumPicBox.TabIndex = 46;
             this.AlbumPicBox.TabStop = false;
             // 
@@ -321,7 +273,7 @@
             // 
             // ClearButton
             // 
-            this.ClearButton.Location = new System.Drawing.Point(234, 39);
+            this.ClearButton.Location = new System.Drawing.Point(204, 39);
             this.ClearButton.Name = "ClearButton";
             this.ClearButton.Size = new System.Drawing.Size(59, 23);
             this.ClearButton.TabIndex = 47;
@@ -329,18 +281,58 @@
             this.ClearButton.UseVisualStyleBackColor = true;
             this.ClearButton.Click += new System.EventHandler(this.ClearButton_Click);
             // 
+            // FolderButton
+            // 
+            this.FolderButton.BackColor = System.Drawing.SystemColors.Control;
+            this.FolderButton.FlatAppearance.BorderColor = System.Drawing.Color.Red;
+            this.FolderButton.FlatAppearance.BorderSize = 3;
+            this.FolderButton.Location = new System.Drawing.Point(93, 12);
+            this.FolderButton.Name = "FolderButton";
+            this.FolderButton.Size = new System.Drawing.Size(80, 23);
+            this.FolderButton.TabIndex = 48;
+            this.FolderButton.Text = "Choose folder";
+            this.FolderButton.UseVisualStyleBackColor = false;
+            this.FolderButton.Click += new System.EventHandler(this.FolderButton_Click);
+            // 
+            // FolderPicker
+            // 
+            this.FolderPicker.RootFolder = System.Environment.SpecialFolder.MyComputer;
+            this.FolderPicker.SelectedPath = "C:\\Users\\Sander\\Music";
+            // 
+            // PlayListButton
+            // 
+            this.PlayListButton.Cursor = System.Windows.Forms.Cursors.Default;
+            this.PlayListButton.Location = new System.Drawing.Point(269, 39);
+            this.PlayListButton.Name = "PlayListButton";
+            this.PlayListButton.Size = new System.Drawing.Size(59, 23);
+            this.PlayListButton.TabIndex = 49;
+            this.PlayListButton.Text = "PlayLists";
+            this.PlayListButton.UseVisualStyleBackColor = true;
+            this.PlayListButton.Click += new System.EventHandler(this.PlayListButton_Click);
+            // 
+            // PlayListBox
+            // 
+            this.PlayListBox.Cursor = System.Windows.Forms.Cursors.Default;
+            this.PlayListBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.PlayListBox.FormattingEnabled = true;
+            this.PlayListBox.Location = new System.Drawing.Point(226, 97);
+            this.PlayListBox.Name = "PlayListBox";
+            this.PlayListBox.Size = new System.Drawing.Size(102, 21);
+            this.PlayListBox.TabIndex = 50;
+            this.PlayListBox.SelectedIndexChanged += new System.EventHandler(this.PlayListBox_SelectedIndexChanged);
+            // 
             // Player
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(493, 340);
+            this.Controls.Add(this.PlayListBox);
+            this.Controls.Add(this.PlayListButton);
+            this.Controls.Add(this.FolderButton);
             this.Controls.Add(this.ClearButton);
-            this.Controls.Add(this.StyleBox);
             this.Controls.Add(this.TimeLabel);
-            this.Controls.Add(this.BugsButton);
             this.Controls.Add(this.AutoPlayBox);
             this.Controls.Add(this.ShuffleButton);
-            this.Controls.Add(this.VolumeLabel);
             this.Controls.Add(this.TrackList);
             this.Controls.Add(this.NextButton);
             this.Controls.Add(this.PreviousButton);
@@ -349,18 +341,20 @@
             this.Controls.Add(this.StopButton);
             this.Controls.Add(this.PauseButton);
             this.Controls.Add(this.PlayButton);
-            this.Controls.Add(this.Volume);
             this.Controls.Add(this.WhatMedia);
             this.Controls.Add(this.TimeBar);
             this.Controls.Add(this.AlbumPicBox);
+            this.ForeColor = System.Drawing.Color.Black;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Player";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Sander Productions MediaPlayer";
-            this.Load += new System.EventHandler(this.Player_Load);
+            this.Activated += new System.EventHandler(this.Player_Activated);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Player_FormClosing);
+            this.Shown += new System.EventHandler(this.Player_Shown);
             this.SizeChanged += new System.EventHandler(this.Player_SizeChanged);
             ((System.ComponentModel.ISupportInitialize)(this.TimeBar)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.Volume)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.AlbumPicBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -374,27 +368,27 @@
         private System.Windows.Forms.Button StopButton;
         private System.Windows.Forms.Button PauseButton;
         private System.Windows.Forms.Button PlayButton;
-        private System.Windows.Forms.TrackBar Volume;
         private System.Windows.Forms.Button PreviousButton;
         private System.Windows.Forms.Button NextButton;
-        private System.Windows.Forms.ListView TrackList;
         private System.Windows.Forms.ColumnHeader ViewName;
         private System.Windows.Forms.ColumnHeader ViewArtist;
         private System.Windows.Forms.ColumnHeader ViewAlbum;
-        private System.Windows.Forms.Label VolumeLabel;
         public System.Windows.Forms.TrackBar TimeBar;
         internal System.Windows.Forms.ColumnHeader ViewLength;
         private System.Windows.Forms.ColumnHeader RealName;
         private System.Windows.Forms.Button ShuffleButton;
         private System.Windows.Forms.CheckBox AutoPlayBox;
-        private System.Windows.Forms.Button BugsButton;
         private System.Windows.Forms.Timer AutoPlayTimer;
         private System.Windows.Forms.TextBox WhatMedia;
         private System.Windows.Forms.Timer CurrentTimer;
-        private System.Windows.Forms.ComboBox StyleBox;
         private System.Windows.Forms.PictureBox AlbumPicBox;
         private System.Windows.Forms.Label TimeLabel;
         private System.Windows.Forms.Button ClearButton;
+        private System.Windows.Forms.Button FolderButton;
+        private System.Windows.Forms.FolderBrowserDialog FolderPicker;
+        private System.Windows.Forms.Button PlayListButton;
+        private System.Windows.Forms.ComboBox PlayListBox;
+        public System.Windows.Forms.ListView TrackList;
     }
 }
 

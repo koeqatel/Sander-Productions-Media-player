@@ -19,44 +19,131 @@ namespace Sander_Productions_Mediaplayer
             #region Supported extensions
             SuppExt.Add(".mp3");
             SuppExt.Add(".wav");
+            SuppExt.Add(".mp4");
             #endregion            
             TimeBar.TickFrequency = 2500;
+            FolderPicker.SelectedPath = Environment.GetFolderPath(Environment.SpecialFolder.System).Substring(0, 1) + @":\Users\" + Environment.UserName + @"\Music\";
         }
-        public bool Development = false;
-
 
         #region Public Fields & Stuff
         public int CurrentSeconds = 0;
-        public int MilliSeconds = 0;
         public int Seconds = 1;
         public int Minutes = 0;
         public int Hours = 0;
         public double Time;
         public bool Pause;
-        public bool Autoplay;
         public bool Playing;
         public string DisplayTime;
         public string currentTime;
         public string ShowTime;
-        public string Corrupted;
+        public static string Corrupted;
+        //public string[] files;
+        public static string Path = Environment.GetFolderPath(Environment.SpecialFolder.System).Substring(0, 1) + @":\Users\" + Environment.UserName + @"\SP-PlayLists\";
 
+
+        public static List<string> files = new List<string>();
         List<string> SuppExt = new List<string>();
-        List<string> duplicates = new List<string>();
-        List<string> Corrupt = new List<string>();
+        public static List<string> InTrackList = new List<string>();
+        public static List<string> Corrupt = new List<string>();
         OpenFileDialog Dialog = new OpenFileDialog();
         IWavePlayer MediaPlayer = new WaveOut();
         #endregion
 
-        private void Player_Load(object sender, EventArgs e)
+        #region Methods
+        public void Add()
         {
-            StyleBox.Visible = Development;
-            Volume.Visible = Development;
-            VolumeLabel.Visible = Development;
-            BugsButton.Visible = Development;
-        }
+            Corrupt.Clear();
+            if (Playing)
+            {
+                MediaPlayer.Pause();
+                CurrentTimer.Stop();
+            }
+            foreach (string file in files)
+            {
+                FileInfo fileInfo = new FileInfo(file);
 
-        #region Buttons
-        private void Playbutton_Click(object sender, EventArgs e)
+                if (SuppExt.Contains(fileInfo.Extension))
+                {
+                    try
+                    {
+                        TagLib.File tagFile = TagLib.File.Create(file);
+                        ListViewItem item = new ListViewItem();
+                        item.Text = file;
+                        AudioFileReader reader = new AudioFileReader(file);
+                        TimeSpan totalTime = reader.TotalTime;
+
+                        if (!InTrackList.Contains(file))
+                        {
+                            InTrackList.Add(file);
+
+                            #region DisplayTime
+
+                            DisplayTime = totalTime.Hours.ToString();
+                            if (totalTime.Minutes < 10)
+                            {
+                                DisplayTime = DisplayTime + ":0" + totalTime.Minutes.ToString();
+                            }
+                            else
+                            {
+                                DisplayTime = DisplayTime + ":" + totalTime.Minutes.ToString();
+                            }
+                            if (totalTime.Seconds < 10)
+                            {
+                                DisplayTime = DisplayTime + ":0" + totalTime.Seconds.ToString();
+                            }
+                            else
+                            {
+                                DisplayTime = DisplayTime + ":" + totalTime.Seconds.ToString();
+                            }
+
+                            #endregion
+
+                            if (tagFile.Tag.Title != null)
+                            {
+                                item.SubItems.Add(tagFile.Tag.Title);
+                            }
+                            else
+                            {
+                                string ShowName = fileInfo.Name;
+                                ShowName = ShowName.Replace(fileInfo.Extension, "");
+                                item.SubItems.Add(ShowName);
+                            }
+
+                            item.SubItems.Add(tagFile.Tag.FirstPerformer);
+                            item.SubItems.Add(tagFile.Tag.Album);
+                            item.SubItems.Add(DisplayTime);
+                            TrackList.Items.Add(item);
+                        }
+                    }
+                    catch (CorruptFileException ex)
+                    {
+                        Corrupt.Add(fileInfo.Name);
+                    }
+                }
+            }
+            if (Playing)
+            {
+                MediaPlayer.Play();
+                CurrentTimer.Start();
+            }
+            if (Corrupt.Count > 0)
+            {
+                string message = "";
+                foreach (var item in Corrupt)
+                    Corrupted = Corrupted + item;
+
+                if (Corrupt.Count == 1)
+                    message = "The following item: " + Corrupted + " is corrupted";
+                if (Corrupt.Count > 1)
+                    message = "The following items: " + Corrupted + " are corrupted";
+
+
+                MessageBox.Show(message, "Error",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error);
+            }
+        }
+        public void Start()
         {
             try
             {
@@ -73,24 +160,27 @@ namespace Sander_Productions_Mediaplayer
                         if (!Pause)
                         {
                             AudioFileReader fileReader = new AudioFileReader(TrackList.Items[0].Text);
+
+                            //AudioFileReader fileReader = new AudioFileReader();
                             MediaPlayer.Init(fileReader);
                         }
                         Pause = false;
                         LengthTimer.Start();
                         MediaPlayer.Play();
                         string Title = TrackList.Items[0].SubItems[1].Text;
+                        string Artist = TrackList.Items[0].SubItems[2].Text;
                         StatusLabel.Text = MediaPlayer.PlaybackState.ToString();
-                        WhatMedia.Text = Title;
+                        WhatMedia.Text = Artist + " - " + Title;
                         TagLib.File tagFile = TagLib.File.Create(TrackList.Items[0].Text);
                         try
                         {
+                            AlbumPicBox.BackgroundImageLayout = ImageLayout.Stretch;
                             MemoryStream ms = new MemoryStream(tagFile.Tag.Pictures[0].Data.Data);
                             System.Drawing.Image image = System.Drawing.Image.FromStream(ms);
                             AlbumPicBox.BackgroundImage = image;
                         }
-                        catch(IndexOutOfRangeException)
+                        catch (IndexOutOfRangeException)
                         {
-                            AlbumPicBox.BackgroundImageLayout = ImageLayout.Stretch;
                             AlbumPicBox.BackgroundImageLayout = ImageLayout.None;
                             AlbumPicBox.BackgroundImage = AlbumPicBox.ErrorImage;
                         }
@@ -105,6 +195,48 @@ namespace Sander_Productions_Mediaplayer
                     MessageBoxIcon.Error);
             }
         }
+        public void Stop()
+        {
+            Playing = false;
+            Pause = false;
+            MediaPlayer.Stop();
+            MediaPlayer.Dispose();
+            LengthTimer.Stop();
+            CurrentTimer.Stop();
+            Seconds = 1;
+            Minutes = 0;
+            Hours = 0;
+            CurrentSeconds = 0;
+            Time = 0;
+            TimeLabel.Text = "0:00:00/0:00:00";
+            TimeBar.Value = 0;
+            StatusLabel.Text = "Stopped";
+        }
+        #endregion
+
+        private void Player_Shown(object sender, EventArgs e)
+        {
+            {
+                try
+                {
+                    foreach (var file in Directory.GetFiles(Path))
+                        files.Add(file);
+                }
+
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error: " + ex);
+                    if (!System.IO.Directory.Exists(Path))
+                        System.IO.Directory.CreateDirectory(Path);
+                }
+            }
+        }
+
+        #region Buttons
+        private void Playbutton_Click(object sender, EventArgs e)
+        {
+            Start();
+        }
         private void PauseButton_Click(object sender, EventArgs e)
         {
             Pause = true;
@@ -117,21 +249,7 @@ namespace Sander_Productions_Mediaplayer
         }
         private void StopButton_Click(object sender, EventArgs e)
         {
-            Playing = false;
-            Pause = false;
-            MediaPlayer.Stop();
-            MediaPlayer.Dispose();
-            LengthTimer.Stop();
-            CurrentTimer.Stop();
-            MilliSeconds = 0;
-            Seconds = 1;
-            Minutes = 0;
-            Hours = 0;
-            CurrentSeconds = 0;
-            Time = 0;
-            TimeLabel.Text = "0:00:00/0:00:00";
-            TimeBar.Value = 0;
-            StatusLabel.Text = "Stopped";
+            Stop();
         }
         #endregion
 
@@ -141,11 +259,9 @@ namespace Sander_Productions_Mediaplayer
             FileInfo fileInfo = new FileInfo(TrackList.Items[0].Text);
             TagLib.File tagFile = TagLib.File.Create(TrackList.Items[0].Text);
             AudioFileReader reader = new AudioFileReader(TrackList.Items[0].Text);
-            if (Hours * 60 * 60 + Minutes * 60 + Seconds > reader.TotalTime.TotalSeconds)
+            if (Hours * 60 * 60 + Minutes * 60 + Seconds > reader.TotalTime.TotalSeconds + 1)
             {
-                LengthTimer.Stop();
-                MediaPlayer.Stop();
-                CurrentTimer.Stop();
+                Stop();
             }
             else
             {
@@ -218,7 +334,6 @@ namespace Sander_Productions_Mediaplayer
         }
         private void AutoPlayTimer_Tick(object sender, EventArgs e)
         {
-
             if (AutoPlayBox.Checked)
             {
                 if (TrackList.Items.Count > 0)
@@ -227,48 +342,20 @@ namespace Sander_Productions_Mediaplayer
                     TimeSpan totalTime = reader.TotalTime;
                     if (CurrentSeconds == Math.Round(reader.TotalTime.TotalSeconds, 0) - 1)
                     {
-                        LengthTimer.Stop();
-                        CurrentTimer.Stop();
-                        MilliSeconds = 0;
-                        Seconds = 1;
-                        Minutes = 0;
-                        Hours = 0;
-                        CurrentSeconds = 0;
-                        Time = 0;
-                        TimeBar.Value = 0;
+                        Stop();
                         if (TrackList.Items.Count > 1)
                         {
-                            LengthTimer.Start();
-                            CurrentTimer.Start();
-
-                            MediaPlayer.Stop();
+                            Stop();
                             var item = TrackList.Items[0];
                             TrackList.Items.RemoveAt(0);
                             TrackList.Items.Insert(TrackList.Items.Count, item);
-                            AudioFileReader fileReader = new AudioFileReader(TrackList.Items[0].Text);
-                            MediaPlayer.Init(fileReader);
-                            MediaPlayer.Play();
-                            string Title = TrackList.Items[0].SubItems[1].Text;
-                            StatusLabel.Text = MediaPlayer.PlaybackState.ToString();
-                            WhatMedia.Text = Title;
+                            Start();
                         }
                         else
                         {
-                            CurrentTimer.Start();
-                            LengthTimer.Start();
-                            MediaPlayer.Stop();
-                            AudioFileReader fileReader = new AudioFileReader(TrackList.Items[0].Text);
-                            MediaPlayer.Init(fileReader);
-                            MediaPlayer.Play();
-                            string Title = TrackList.Items[0].SubItems[1].Text;
-                            StatusLabel.Text = MediaPlayer.PlaybackState.ToString();
-                            WhatMedia.Text = Title;
+                            Start();
                         }
                     }
-                }
-                else
-                {
-                    AutoPlayBox.Checked = false;
                 }
             }
         }
@@ -279,157 +366,34 @@ namespace Sander_Productions_Mediaplayer
             Dialog.Multiselect = true;
             if (Dialog.ShowDialog() == DialogResult.OK)
             {
-                string[] files = Dialog.FileNames;
-                if (Playing)
-                {
-                    MediaPlayer.Pause();
-                    CurrentTimer.Stop();
-                }
-                foreach (string file in files)
-                {
-                    FileInfo fileInfo = new FileInfo(file);
-
-                    if (SuppExt.Contains(fileInfo.Extension))
-                    {
-                    TagLib.File tagFile = TagLib.File.Create(file);
-                    ListViewItem item = new ListViewItem();
-                    item.Text = file;
-                    AudioFileReader reader = new AudioFileReader(file);
-                    TimeSpan totalTime = reader.TotalTime;
-                    
-                        if (!duplicates.Contains(file))
-                        {
-                            duplicates.Add(file);
-                            try
-                            {
-                                #region DisplayTime
-
-                                DisplayTime = totalTime.Hours.ToString();
-                                if (totalTime.Minutes < 10)
-                                {
-                                    DisplayTime = DisplayTime + ":0" + totalTime.Minutes.ToString();
-                                }
-                                else
-                                {
-                                    DisplayTime = DisplayTime + ":" + totalTime.Minutes.ToString();
-                                }
-                                if (totalTime.Seconds < 10)
-                                {
-                                    DisplayTime = DisplayTime + ":0" + totalTime.Seconds.ToString();
-                                }
-                                else
-                                {
-                                    DisplayTime = DisplayTime + ":" + totalTime.Seconds.ToString();
-                                }
-
-                                #endregion
-
-                                if (tagFile.Tag.Title != null)
-                                {
-                                    item.SubItems.Add(tagFile.Tag.Title);
-                                }
-                                else
-                                {
-                                    item.SubItems.Add(fileInfo.Name);
-                                }
-
-                                item.SubItems.Add(tagFile.Tag.FirstPerformer);
-                                item.SubItems.Add(tagFile.Tag.Album);
-                                item.SubItems.Add(DisplayTime);
-                                TrackList.Items.Add(item);
-                            }
-                            catch (CorruptFileException ex)
-                            {
-                                Corrupt.Add(fileInfo.Name);
-                            }
-                        }
-                    }
-                }
-                if (Playing)
-                {
-                    MediaPlayer.Play();
-                    CurrentTimer.Start();
-                }
+                foreach (var file in Dialog.FileNames)
+                    files.Add(file);
+                Add();
             }
-            if (Corrupt.Count > 0)
+        }
+
+        private void FolderButton_Click(object sender, EventArgs e)
+        {
+            if (FolderPicker.ShowDialog() == DialogResult.OK)
             {
-                string message = "";
-                foreach (var item in Corrupt)
-                    Corrupted = Corrupted + item;
-
-                if (Corrupt.Count == 1)
-                    message = "The following item: " + Corrupted + " is corrupted";
-                if (Corrupt.Count > 1)
-                    message = "The following items: " + Corrupted + " are corrupted";
-
-
-                MessageBox.Show(message, "Error",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Error);
+                foreach (var file in Directory.GetFiles(FolderPicker.SelectedPath))
+                    files.Add(file);
+                Add();
             }
         }
 
         private void NextButton_Click(object sender, EventArgs e)
         {
-            Playing = false;
-            Pause = false;
-            LengthTimer.Stop();
-            MediaPlayer.Stop();
-            CurrentTimer.Stop();
-            MilliSeconds = 0;
-            Seconds = 1;
-            Minutes = 0;
-            Hours = 0;
-            CurrentSeconds = 0;
-            Time = 0;
-            TimeLabel.Text = "0:00:00/0:00:00";
-            TimeBar.Value = 0;
-            StatusLabel.Text = "Stopped";
+            Stop();
             var item = TrackList.Items[0];
             TrackList.Items.RemoveAt(0);
             TrackList.Items.Insert(TrackList.Items.Count, item);
-            Playing = true;
-            Pause = false;
-            LengthTimer.Start();
-            CurrentTimer.Start();
-            AudioFileReader fileReader = new AudioFileReader(TrackList.Items[0].Text);
-            MediaPlayer.Init(fileReader);
-            MediaPlayer.Play();
-            string Title = TrackList.Items[0].SubItems[1].Text;
-            StatusLabel.Text = MediaPlayer.PlaybackState.ToString();
-            WhatMedia.Text = Title;
-            TagLib.File tagFile = TagLib.File.Create(TrackList.Items[0].Text);
-            try
-            {
-                MemoryStream ms = new MemoryStream(tagFile.Tag.Pictures[0].Data.Data);
-                System.Drawing.Image image = System.Drawing.Image.FromStream(ms);
-                AlbumPicBox.BackgroundImage = image;
-            }
-            catch (IndexOutOfRangeException)
-            {
-                AlbumPicBox.BackgroundImageLayout = ImageLayout.Stretch;
-                AlbumPicBox.BackgroundImageLayout = ImageLayout.None;
-                AlbumPicBox.BackgroundImage = AlbumPicBox.ErrorImage;
-            }
+            Start();
         }
 
         private void PreviousButton_Click(object sender, EventArgs e)
         {
-            int i = 0;
-            Playing = false;
-            Pause = false;
-            LengthTimer.Stop();
-            MediaPlayer.Stop();
-            CurrentTimer.Stop();
-            MilliSeconds = 0;
-            Seconds = 1;
-            Minutes = 0;
-            Hours = 0;
-            CurrentSeconds = 0;
-            Time = 0;
-            TimeLabel.Text = "0:00:00/0:00:00";
-            TimeBar.Value = 0;
-            StatusLabel.Text = "Stopped";
+            Stop();
             List<ListViewItem> List = new List<ListViewItem>();
             foreach (ListViewItem Item in TrackList.Items)
             {
@@ -446,37 +410,7 @@ namespace Sander_Productions_Mediaplayer
                     List.RemoveAt(0);
                 }
             }
-            Playing = true;
-            Pause = false;
-            LengthTimer.Start();
-            CurrentTimer.Start();
-            AudioFileReader fileReader = new AudioFileReader(TrackList.Items[0].Text);
-            MediaPlayer.Init(fileReader);
-            MediaPlayer.Play();
-            string Title = TrackList.Items[0].SubItems[1].Text;
-            StatusLabel.Text = MediaPlayer.PlaybackState.ToString();
-            WhatMedia.Text = Title;
-            TagLib.File tagFile = TagLib.File.Create(TrackList.Items[0].Text);
-            try
-            {
-                MemoryStream ms = new MemoryStream(tagFile.Tag.Pictures[0].Data.Data);
-                System.Drawing.Image image = System.Drawing.Image.FromStream(ms);
-                AlbumPicBox.BackgroundImage = image;
-            }
-            catch (IndexOutOfRangeException)
-            {
-                AlbumPicBox.BackgroundImageLayout = ImageLayout.Stretch;
-                AlbumPicBox.BackgroundImageLayout = ImageLayout.None;
-                AlbumPicBox.BackgroundImage = AlbumPicBox.ErrorImage;
-            }
-        }
-
-        private void AutoPlayBox_CheckedChanged(object sender, EventArgs e)
-        {
-            if (AutoPlayBox.Checked)
-                AutoPlayTimer.Start();
-            else
-                AutoPlayTimer.Stop();
+            Start();
         }
 
         private void ShuffleButton_Click(object sender, EventArgs e)
@@ -507,54 +441,15 @@ namespace Sander_Productions_Mediaplayer
             }
         }
 
-        private void Volume_Scroll(object sender, EventArgs e)
-        {
-            //            VolumeLabel.Text = Volume.Value.ToString();
-            //            MediaPlayer.Volume = Volume.Value / 10000;
-        }
-
         private void TrackList_MouseClick(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
             {
                 if (TrackList.FocusedItem.Bounds.Contains(e.Location) == true)
                 {
-                    Playing = false;
-                    LengthTimer.Stop();
-                    MediaPlayer.Stop();
-                    CurrentTimer.Stop();
-                    duplicates.Remove(TrackList.FocusedItem.Text);
+                    InTrackList.Remove(TrackList.FocusedItem.Text);
                     TrackList.Items.Remove(TrackList.FocusedItem);
-                    MilliSeconds = 0;
-                    Seconds = 1;
-                    Minutes = 0;
-                    Hours = 0;
-                    CurrentSeconds = 0;
-                    Time = 0;
-                    TimeLabel.Text = "0:00:00/0:00:00";
-                    TimeBar.Value = 0;
-                    StatusLabel.Text = "Stopped";
                 }
-            }
-        }
-
-        private void BugsButton_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show("Not anymore :D",
-                "Bugs",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Error);
-        }
-
-        private void StyleBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (StyleBox.Focused.ToString() == "Normal")
-            {
-
-            }
-            if (StyleBox.Focused.ToString() == "Dark")
-            {
-
             }
         }
 
@@ -569,21 +464,83 @@ namespace Sander_Productions_Mediaplayer
 
         private void ClearButton_Click(object sender, EventArgs e)
         {
-            Playing = false;
-            LengthTimer.Stop();
-            MediaPlayer.Stop();
-            CurrentTimer.Stop();
-            duplicates.Clear();
+            Stop();
+            InTrackList.Clear();
             TrackList.Items.Clear();
-            MilliSeconds = 0;
-            Seconds = 1;
-            Minutes = 0;
-            Hours = 0;
-            CurrentSeconds = 0;
-            Time = 0;
-            TimeLabel.Text = "0:00:00/0:00:00";
-            TimeBar.Value = 0;
-            StatusLabel.Text = "Stopped";
+        }
+
+        private void PlayListButton_Click(object sender, EventArgs e)
+        {
+            PlayLists List = new PlayLists();
+            List.ShowDialog();
+        }
+
+        private void Player_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Application.Exit();
+        }
+
+        private void TrackList_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                e.Effect = DragDropEffects.Copy;
+            }
+            else
+            {
+                e.Effect = DragDropEffects.None;
+            }
+        }
+
+        private void TrackList_DragDrop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                foreach (var file in (string[])(e.Data.GetData(DataFormats.FileDrop)))
+                    files.Add(file);
+                Add();
+            }
+        }
+
+        private void PlayListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Stop();
+            InTrackList.Clear();
+            TrackList.Items.Clear();
+            files.Clear();
+
+            string line;
+
+            List<string> Init = new List<string>();
+            // Read the file and display it line by line.
+            System.IO.StreamReader AddFile = new System.IO.StreamReader(Path + PlayListBox.SelectedItem + ".txt");
+            while ((line = AddFile.ReadLine()) != null)
+            {
+                files.Add(line);
+            }
+            Add();
+            TrackList.Focus();
+        }
+
+        private void Player_Activated(object sender, EventArgs e)
+        {
+            try
+            {
+                foreach (var file in Directory.GetFiles(Path))
+                {
+
+                    FileInfo fileInfo = new FileInfo(file);
+
+                    if (!PlayListBox.Items.Contains(fileInfo.Name.Replace(fileInfo.Extension, "")))
+                    {
+                        PlayListBox.Items.Add(fileInfo.Name.Replace(fileInfo.Extension, ""));
+                    }
+                }
+            }
+            catch (DirectoryNotFoundException)
+            {
+                Application.Restart();
+            }
         }
     }
 }

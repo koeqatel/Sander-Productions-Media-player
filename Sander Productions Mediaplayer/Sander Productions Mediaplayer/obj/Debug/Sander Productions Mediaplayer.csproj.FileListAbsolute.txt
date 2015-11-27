@@ -28,3 +28,4 @@ C:\Users\Sander\Documents\Visual Studio 2015\Projects\Sander-Productions-Media-p
 C:\Users\Sander\Documents\Visual Studio 2015\Projects\Sander-Productions-Media-player\Sander Productions Mediaplayer\Sander Productions Mediaplayer\obj\Debug\Sander_Productions_Mediaplayer.Player.resources
 C:\Users\Sander\Documents\Visual Studio 2015\Projects\Sander-Productions-Media-player\Sander Productions Mediaplayer\Sander Productions Mediaplayer\obj\Debug\Sander_Productions_Mediaplayer.Properties.Resources.resources
 C:\Users\Sander\Documents\Visual Studio 2015\Projects\Sander-Productions-Media-player\Sander Productions Mediaplayer\Sander Productions Mediaplayer\obj\Debug\Sander Productions Mediaplayer.csproj.GenerateResource.Cache
+C:\Users\Sander\Documents\Visual Studio 2015\Projects\Sander-Productions-Media-player\Sander Productions Mediaplayer\Sander Productions Mediaplayer\obj\Debug\Sander_Productions_Mediaplayer.PlayLists.resources
