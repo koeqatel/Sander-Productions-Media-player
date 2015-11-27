@@ -142,7 +142,7 @@
             // 
             // NextButton
             // 
-            this.NextButton.Location = new System.Drawing.Point(160, 96);
+            this.NextButton.Location = new System.Drawing.Point(157, 96);
             this.NextButton.Name = "NextButton";
             this.NextButton.Size = new System.Drawing.Size(60, 23);
             this.NextButton.TabIndex = 31;
@@ -162,12 +162,14 @@
             this.ViewArtist,
             this.ViewAlbum,
             this.ViewLength});
+            this.TrackList.Cursor = System.Windows.Forms.Cursors.Default;
             this.TrackList.Location = new System.Drawing.Point(12, 178);
             this.TrackList.Name = "TrackList";
             this.TrackList.Size = new System.Drawing.Size(469, 152);
             this.TrackList.TabIndex = 34;
             this.TrackList.UseCompatibleStateImageBehavior = false;
             this.TrackList.View = System.Windows.Forms.View.Details;
+            this.TrackList.ColumnWidthChanging += new System.Windows.Forms.ColumnWidthChangingEventHandler(this.TrackList_ColumnWidthChanging);
             this.TrackList.DragDrop += new System.Windows.Forms.DragEventHandler(this.TrackList_DragDrop);
             this.TrackList.DragEnter += new System.Windows.Forms.DragEventHandler(this.TrackList_DragEnter);
             this.TrackList.MouseClick += new System.Windows.Forms.MouseEventHandler(this.TrackList_MouseClick);
@@ -315,9 +317,9 @@
             this.PlayListBox.Cursor = System.Windows.Forms.Cursors.Default;
             this.PlayListBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.PlayListBox.FormattingEnabled = true;
-            this.PlayListBox.Location = new System.Drawing.Point(226, 97);
+            this.PlayListBox.Location = new System.Drawing.Point(223, 97);
             this.PlayListBox.Name = "PlayListBox";
-            this.PlayListBox.Size = new System.Drawing.Size(102, 21);
+            this.PlayListBox.Size = new System.Drawing.Size(105, 21);
             this.PlayListBox.TabIndex = 50;
             this.PlayListBox.SelectedIndexChanged += new System.EventHandler(this.PlayListBox_SelectedIndexChanged);
             // 

@@ -55,6 +55,7 @@
             this.Current_List.TabIndex = 35;
             this.Current_List.UseCompatibleStateImageBehavior = false;
             this.Current_List.View = System.Windows.Forms.View.Details;
+            this.Current_List.ColumnWidthChanging += new System.Windows.Forms.ColumnWidthChangingEventHandler(this.Current_List_ColumnWidthChanging);
             this.Current_List.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Current_List_MouseClick);
             // 
             // RealNameCur
@@ -84,6 +85,7 @@
             this.Play_List.TabIndex = 36;
             this.Play_List.UseCompatibleStateImageBehavior = false;
             this.Play_List.View = System.Windows.Forms.View.Details;
+            this.Play_List.ColumnWidthChanging += new System.Windows.Forms.ColumnWidthChangingEventHandler(this.Play_List_ColumnWidthChanging);
             this.Play_List.DragDrop += new System.Windows.Forms.DragEventHandler(this.Play_List_DragDrop);
             this.Play_List.DragEnter += new System.Windows.Forms.DragEventHandler(this.Play_List_DragEnter);
             this.Play_List.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Play_List_MouseClick);
@@ -113,10 +115,12 @@
             // NameText
             // 
             this.NameText.Location = new System.Drawing.Point(56, 38);
+            this.NameText.Multiline = false;
             this.NameText.Name = "NameText";
             this.NameText.Size = new System.Drawing.Size(425, 23);
             this.NameText.TabIndex = 38;
             this.NameText.Text = "";
+            this.NameText.WordWrap = false;
             this.NameText.TextChanged += new System.EventHandler(this.NameText_TextChanged);
             // 
             // label1
@@ -132,7 +136,7 @@
             // 
             this.EditBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.EditBox.FormattingEnabled = true;
-            this.EditBox.Location = new System.Drawing.Point(93, 11);
+            this.EditBox.Location = new System.Drawing.Point(90, 10);
             this.EditBox.Name = "EditBox";
             this.EditBox.Size = new System.Drawing.Size(121, 21);
             this.EditBox.TabIndex = 40;
@@ -154,7 +158,6 @@
             this.Name = "PlayLists";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "PlayLists";
-            this.Activated += new System.EventHandler(this.PlayLists_Activated);
             this.Shown += new System.EventHandler(this.PlayLists_Shown);
             this.SizeChanged += new System.EventHandler(this.PlayLists_SizeChanged);
             this.ResumeLayout(false);

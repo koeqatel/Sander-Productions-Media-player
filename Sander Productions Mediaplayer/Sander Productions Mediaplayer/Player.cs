@@ -23,6 +23,10 @@ namespace Sander_Productions_Mediaplayer
             #endregion            
             TimeBar.TickFrequency = 2500;
             FolderPicker.SelectedPath = Environment.GetFolderPath(Environment.SpecialFolder.System).Substring(0, 1) + @":\Users\" + Environment.UserName + @"\Music\";
+            RealName.Width = TrackList.Width / 100 * 0;
+            ViewName.Width = TrackList.Width / 100 * 42;
+            ViewArtist.Width = TrackList.Width / 100 * 26;
+            ViewAlbum.Width = TrackList.Width / 100 * 26;
         }
 
         #region Public Fields & Stuff
@@ -37,12 +41,13 @@ namespace Sander_Productions_Mediaplayer
         public string currentTime;
         public string ShowTime;
         public static string Corrupted;
-        //public string[] files;
         public static string Path = Environment.GetFolderPath(Environment.SpecialFolder.System).Substring(0, 1) + @":\Users\" + Environment.UserName + @"\SP-PlayLists\";
+        private int lockColumnIndex = 0;
+
 
 
         public static List<string> files = new List<string>();
-        List<string> SuppExt = new List<string>();
+        public static List<string> SuppExt = new List<string>();
         public static List<string> InTrackList = new List<string>();
         public static List<string> Corrupt = new List<string>();
         OpenFileDialog Dialog = new OpenFileDialog();
@@ -159,8 +164,6 @@ namespace Sander_Productions_Mediaplayer
                         if (!Pause)
                         {
                             AudioFileReader fileReader = new AudioFileReader(TrackList.Items[0].Text);
-
-                            //AudioFileReader fileReader = new AudioFileReader();
                             MediaPlayer.Init(fileReader);
                         }
                         Pause = false;
@@ -257,8 +260,7 @@ namespace Sander_Productions_Mediaplayer
         {
             FileInfo fileInfo = new FileInfo(TrackList.Items[0].Text);
             TagLib.File tagFile = TagLib.File.Create(TrackList.Items[0].Text);
-            AudioFileReader reader = new AudioFileReader(TrackList.Items[0].Text);
-            if (Hours * 60 * 60 + Minutes * 60 + Seconds > reader.TotalTime.TotalSeconds + 1)
+            if (Hours * 60 * 60 + Minutes * 60 + Seconds > tagFile.Properties.Duration.TotalSeconds + 1)
             {
                 Stop();
             }
@@ -267,9 +269,9 @@ namespace Sander_Productions_Mediaplayer
                 if (TrackList.Items.Count != 0)
                 {
                     if (Seconds == 0)
-                        Time = CurrentSeconds * 10000 / reader.TotalTime.TotalSeconds;
+                        Time = CurrentSeconds * 10000 / tagFile.Properties.Duration.TotalSeconds;
                     else
-                        Time = CurrentSeconds * 10000 / reader.TotalTime.TotalSeconds;
+                        Time = CurrentSeconds * 10000 / tagFile.Properties.Duration.TotalSeconds;
                     TimeBar.Value = Convert.ToInt32(Math.Round(Time, 0));
                     TimeLabel.Text = currentTime + "/" + ShowTime;
                 }
@@ -279,7 +281,6 @@ namespace Sander_Productions_Mediaplayer
         {
             FileInfo fileInfo = new FileInfo(TrackList.Items[0].Text);
             TagLib.File tagFile = TagLib.File.Create(TrackList.Items[0].Text);
-            AudioFileReader reader = new AudioFileReader(TrackList.Items[0].Text);
             #region Time
             if (Seconds > 59)
             {
@@ -291,22 +292,22 @@ namespace Sander_Productions_Mediaplayer
                 Minutes = 0;
                 Hours++;
             }
-            ShowTime = reader.TotalTime.Hours.ToString();
-            if (reader.TotalTime.Minutes < 10)
+            ShowTime = tagFile.Properties.Duration.Hours.ToString();
+            if (tagFile.Properties.Duration.Minutes < 10)
             {
-                ShowTime = ShowTime + ":0" + Convert.ToString(reader.TotalTime.Minutes);
+                ShowTime = ShowTime + ":0" + Convert.ToString(tagFile.Properties.Duration.Minutes);
             }
             else
             {
-                ShowTime = ShowTime + ":" + Convert.ToString(reader.TotalTime.Minutes);
+                ShowTime = ShowTime + ":" + Convert.ToString(tagFile.Properties.Duration.Minutes);
             }
-            if (reader.TotalTime.Seconds < 10)
+            if (tagFile.Properties.Duration.Seconds < 10)
             {
-                ShowTime = ShowTime + ":0" + Convert.ToString(reader.TotalTime.Seconds);
+                ShowTime = ShowTime + ":0" + Convert.ToString(tagFile.Properties.Duration.Seconds);
             }
             else
             {
-                ShowTime = ShowTime + ":" + Convert.ToString(reader.TotalTime.Seconds);
+                ShowTime = ShowTime + ":" + Convert.ToString(tagFile.Properties.Duration.Seconds);
             }
 
             currentTime = Hours.ToString();
@@ -337,9 +338,9 @@ namespace Sander_Productions_Mediaplayer
             {
                 if (TrackList.Items.Count > 0)
                 {
-                    AudioFileReader reader = new AudioFileReader(TrackList.Items[0].Text);
-                    TimeSpan totalTime = reader.TotalTime;
-                    if (CurrentSeconds == Math.Round(reader.TotalTime.TotalSeconds, 0) - 1)
+                    TagLib.File tagFile = TagLib.File.Create(TrackList.Items[0].Text);
+                    TimeSpan totalTime = tagFile.Properties.Duration;
+                    if (CurrentSeconds == Math.Round(tagFile.Properties.Duration.TotalSeconds, 0) - 1)
                     {
                         Stop();
                         if (TrackList.Items.Count > 1)
@@ -456,9 +457,8 @@ namespace Sander_Productions_Mediaplayer
         {
             RealName.Width = TrackList.Width / 100 * 0;
             ViewName.Width = TrackList.Width / 100 * 42;
-            ViewArtist.Width = TrackList.Width / 100 * 27;
-            ViewAlbum.Width = TrackList.Width / 100 * 27;
-            ViewLength.Width = TrackList.Width / 100 * 16;
+            ViewArtist.Width = TrackList.Width / 100 * 26;
+            ViewAlbum.Width = TrackList.Width / 100 * 26;
         }
 
         private void ClearButton_Click(object sender, EventArgs e)
@@ -539,6 +539,17 @@ namespace Sander_Productions_Mediaplayer
             catch (DirectoryNotFoundException)
             {
                 Application.Restart();
+            }
+        }
+
+        private void TrackList_ColumnWidthChanging(object sender, ColumnWidthChangingEventArgs e)
+        {
+            if (e.ColumnIndex == lockColumnIndex)
+            {
+                //Keep the width not changed.
+                e.NewWidth = this.TrackList.Columns[e.ColumnIndex].Width;
+                //Cancel the event.
+                e.Cancel = true;
             }
         }
     }

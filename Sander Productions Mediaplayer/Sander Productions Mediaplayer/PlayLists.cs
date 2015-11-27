@@ -15,6 +15,8 @@ namespace Sander_Productions_Mediaplayer
     {
         bool Selected;
         bool Changed;
+        private int lockColumnIndex = 0;
+
         List<string> Init = new List<string>();
         public PlayLists()
         {
@@ -44,33 +46,17 @@ namespace Sander_Productions_Mediaplayer
             }
         }
 
-        private void PlayLists_Activated(object sender, EventArgs e)
-        {
-            foreach (var file in Directory.GetFiles(Player.Path))
-            {
-                FileInfo fileInfo = new FileInfo(file);
-
-                if (!EditBox.Items.Contains(fileInfo.Name.Replace(fileInfo.Extension, "")))
-                {
-                    EditBox.Items.Add(fileInfo.Name.Replace(fileInfo.Extension, ""));
-                }
-            }
-        }
-
         private void SaveListButton_Click(object sender, EventArgs e)
         {
             foreach (ListViewItem item in Play_List.Items)
             {
-                if (!Init.Contains(item.Text))
+                try
                 {
-                    try
-                    {
-                        System.IO.File.WriteAllText(Player.Path + NameText.Text + ".txt", System.IO.File.ReadAllText(Player.Path + NameText.Text + ".txt") + item.Text + Environment.NewLine);
-                    }
-                    catch (FileNotFoundException ex)
-                    {
-                        System.IO.File.WriteAllText(Player.Path + NameText.Text + ".txt", item.Text + Environment.NewLine);
-                    }
+                    System.IO.File.WriteAllText(Player.Path + NameText.Text + ".txt", System.IO.File.ReadAllText(Player.Path + NameText.Text + ".txt") + item.Text + Environment.NewLine);
+                }
+                catch (FileNotFoundException ex)
+                {
+                    System.IO.File.WriteAllText(Player.Path + NameText.Text + ".txt", item.Text + Environment.NewLine);
                 }
             }
             foreach (var file in Directory.GetFiles(Player.Path))
@@ -121,7 +107,7 @@ namespace Sander_Productions_Mediaplayer
                 if (Play_List.FocusedItem.Bounds.Contains(e.Location) == true)
                 {
                     FileInfo fileInfo = new FileInfo(Play_List.FocusedItem.Text);
-                    TagLib.File tagFile = TagLib.File.Create(Play_List.FocusedItem.Text + fileInfo.Extension);
+                    TagLib.File tagFile = TagLib.File.Create(Play_List.FocusedItem.Text);
                     ListViewItem ListViewItem = new ListViewItem();
                     ListViewItem.Text = Play_List.FocusedItem.Text;
 
@@ -223,30 +209,37 @@ namespace Sander_Productions_Mediaplayer
             {
                 foreach (var file in (string[])(e.Data.GetData(DataFormats.FileDrop)))
                 {
-                    FileInfo fileInfo = new FileInfo(file);
-                    try
+                    if (!Init.Contains(file))
                     {
-                        TagLib.File tagFile = TagLib.File.Create(file);
-                        ListViewItem ListViewItem = new ListViewItem();
-                        ListViewItem.Text = file;
-
-                        if (tagFile.Tag.Title != null)
+                        Init.Add(file);
+                        FileInfo fileInfo = new FileInfo(file);
+                        try
                         {
-                            ListViewItem.SubItems.Add(tagFile.Tag.Title);
-                        }
-                        else
-                        {
-                            string ShowName = fileInfo.Name;
-                            ShowName = ShowName.Replace(fileInfo.Extension, "");
-                            ListViewItem.SubItems.Add(ShowName);
-                        }
-                        Play_List.Items.Add(ListViewItem);
-                    }
-                    catch (CorruptFileException ex)
-                    {
-                        Player.Corrupt.Add(fileInfo.Name);
-                    }
+                            if (Player.SuppExt.Contains(fileInfo.Extension))
+                            {
+                                TagLib.File tagFile = TagLib.File.Create(file);
+                                ListViewItem ListViewItem = new ListViewItem();
+                                ListViewItem.Text = file;
 
+                                if (tagFile.Tag.Title != null)
+                                {
+                                    ListViewItem.SubItems.Add(tagFile.Tag.Title);
+                                }
+                                else
+                                {
+                                    string ShowName = fileInfo.Name;
+                                    ShowName = ShowName.Replace(fileInfo.Extension, "");
+                                    ListViewItem.SubItems.Add(ShowName);
+                                }
+                                Play_List.Items.Add(ListViewItem);
+                            }
+                        }
+
+                        catch (CorruptFileException ex)
+                        {
+                            Player.Corrupt.Add(fileInfo.Name);
+                        }
+                    }
                 }
                 if (Player.Corrupt.Count > 0)
                 {
@@ -265,6 +258,7 @@ namespace Sander_Productions_Mediaplayer
                     MessageBoxIcon.Error);
                 }
             }
+
         }
 
         private void NameText_TextChanged(object sender, EventArgs e)
@@ -276,6 +270,28 @@ namespace Sander_Productions_Mediaplayer
                 EditBox.SelectedItem = null;
             }
             Selected = false;
+        }
+
+        private void Current_List_ColumnWidthChanging(object sender, ColumnWidthChangingEventArgs e)
+        {
+            if (e.ColumnIndex == lockColumnIndex)
+            {
+                //Keep the width not changed.
+                e.NewWidth = this.Current_List.Columns[e.ColumnIndex].Width;
+                //Cancel the event.
+                e.Cancel = true;
+            }
+        }
+
+        private void Play_List_ColumnWidthChanging(object sender, ColumnWidthChangingEventArgs e)
+        {
+            if (e.ColumnIndex == lockColumnIndex)
+            {
+                //Keep the width not changed.
+                e.NewWidth = this.Play_List.Columns[e.ColumnIndex].Width;
+                //Cancel the event.
+                e.Cancel = true;
+            }
         }
     }
 }
