@@ -69,8 +69,7 @@ namespace Sander_Productions_Mediaplayer
                         TagLib.File tagFile = TagLib.File.Create(file);
                         ListViewItem item = new ListViewItem();
                         item.Text = file;
-                        AudioFileReader reader = new AudioFileReader(file);
-                        TimeSpan totalTime = reader.TotalTime;
+                        TimeSpan totalTime = tagFile.Properties.Duration;
 
                         if (!InTrackList.Contains(file))
                         {
@@ -115,7 +114,7 @@ namespace Sander_Productions_Mediaplayer
                             TrackList.Items.Add(item);
                         }
                     }
-                    catch (CorruptFileException ex)
+                    catch (CorruptFileException)
                     {
                         Corrupt.Add(fileInfo.Name);
                     }
